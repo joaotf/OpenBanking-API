@@ -1,9 +1,19 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 const CardSchema = new mongoose.Schema({
     person_name:{
         type: String,
         required: true,
+    },
+    person_email:{
+      type: String,
+      unique: true,
+      required:true,
+    },
+    person_password:{
+      type: String,
+      required:true,
     },
     person_cpf:{
         type: String,
@@ -37,7 +47,18 @@ const CardSchema = new mongoose.Schema({
     active:{
         type: Boolean,
         default: true
+    },
+    createdAt:{
+      type: Date,
+      default: Date.now
     }
+})
+
+CardSchema.pre('save', async function(next){
+  const hash = await bcrypt.hash(this.person_password,10);
+  this.person_password = hash;
+  
+  next();
 })
 
 export default mongoose.model('Card', CardSchema);

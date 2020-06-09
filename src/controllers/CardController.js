@@ -1,4 +1,13 @@
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import Card from '../models/Card.js';
+import authConfig from '../config/auth.json';
+
+function generateToken(params = {}){
+    return jwt.sign(params , authConfig.secret,{
+        expiresIn : 86400,
+    });
+}
 
 class CardController {
   async index(req,res){
@@ -87,6 +96,26 @@ class CardController {
     } else
        return res.status(400).send({ error: "Cliente não foi encontrado!"})
   }
+
+  async auth(req,res){
+    try {
+        const { person_email , person_password } = req.body;
+        const user = await Card.findOne({ person_email }).select('+person_password')
+        if(!user){
+            return res.status(400).json({error:"Cliente não foi encontrado!"})
+        }
+        if(!await bcrypt.compare(person_password,user.person_password)){
+            return res.status(400).json({error:"Senha inválida!"})
+        }
+        user.person_password = undefined;
+        
+        return res.status(200).send({user,token: generateToken({id:user.id})});
+           
+    }catch (err) {
+        return res.status(400).json({error:"Falha na Autenticação!"})
+    }
+
+}
 
 }
 

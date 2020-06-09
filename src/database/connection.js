@@ -7,7 +7,7 @@ class Database {
 
   init(){
     mongoose.connect(
-      "mongodb+srv://user1:1secret2life3@abf-gyvot.mongodb.net/test?retryWrites=true&w=majority",{
+      "mongodb+srv://joaotomefarias:yjQXVMiuTNmmD0NA@cluster0-fwv4i.mongodb.net/Cards?retryWrites=true&w=majority",{
       useUnifiedTopology:true,
       useNewUrlParser:true
     })
